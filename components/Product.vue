@@ -28,7 +28,7 @@
                 :key="index"
                 :value="category.id"
                 :disabled="category.Id == categoryId"
-                @change="updateCategoryId(category.Id)"
+                @change="updateCategoryId(category.id)"
               >
                 <v-list-item-title>
                   {{ category.title }}
@@ -41,7 +41,11 @@
     </v-row>
     <v-row>
       <v-col v-for="(product, index) in filteredProducts" :key="index" cols="2">
-        <v-card :title="product.title" :ripple="true">
+        <v-card
+          @click="addToCart(product.id)"
+          :title="product.title"
+          :ripple="true"
+        >
           <v-card-actions>
             <v-img
               :src="require(`@/assets/images/products/${product.thumbnail}`)"
@@ -58,7 +62,7 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from 'vuex'
+import { mapState, mapMutations, mapActions } from 'vuex'
 export default {
   data() {
     return {
@@ -69,8 +73,9 @@ export default {
     }
   },
   methods: {
-    ...mapMutations('products', {
-      updateCategoryId: 'updateCategoryId',
+    ...mapActions({
+      updateCategoryId: 'products/updateCategoryId',
+      addToCart: 'carts/addToCart',
     }),
     resetSearchCategory() {
       this.categoryId = false
@@ -82,6 +87,7 @@ export default {
       if (this.categoryId) {
         return this.products.filter((s) => s.categoryId == this.categoryId)
       } else if (this.selectedSearch) {
+        console.log(this.selectedSearch)
         return this.products.filter((s) => s.title == this.selectedSearch.title)
       }
       return this.products
@@ -93,7 +99,7 @@ export default {
     }),
   },
   watch: {
-    search() {
+    search(val) {
       this.isLoading = true
       setTimeout(() => {
         this.itemsSearch = this.products.filter((e) => {
