@@ -80,17 +80,14 @@ export default {
       fetchCategories: 'products/fetchCategories',
     }),
     resetSearchCategory() {
-      this.categoryId = false
+      this.UpdateCategoryId(0)
     },
   },
 
   computed: {
     filteredProducts() {
       if (this.categoryId) {
-        return this.products.filter((s) => s.categoryId == this.categoryId)
-      } else if (this.selectedSearch) {
-        console.log(this.selectedSearch)
-        return this.products.filter((s) => s.title == this.selectedSearch.title)
+        return this.products.filter((product) => product.categoryId == this.categoryId)
       }
       return this.products
     },
@@ -111,6 +108,12 @@ export default {
         })
       }, 1000)
     },
+    selectedSearch(product){
+      if(product){
+        this.addToCart(product._id)
+      }
+
+    }
   },
   mounted() {
     this.fetchProducts()
